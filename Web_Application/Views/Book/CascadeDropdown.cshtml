@@ -1,0 +1,92 @@
+﻿
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="form-group">
+            <label class="control-label">Category</label>
+            <select id="CategoryId" class="form-control" itemid="0" asp-items="ViewBag.CategoryId"></select>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <label class="control-label">Author</label>
+            <select id="AuthorId" class="form-control"></select>
+        </div>
+    </div>   
+</div>
+
+
+
+<script>
+    
+    $("#CategoryId").val(0);
+    $("#CategoryId").change(function () {
+        var id = $("#CategoryId").val();
+        var url = "\\Book\\GetAllAuthorsbyCategoryId"
+        var _author = $('#AuthorId');
+        $.ajax(url, {
+            method: "GET",
+            data: { id: id },
+            cache: false,
+            processData: true,
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            xhrFields: { withCredentials: false }
+        }).done(function (response) {
+            _author.empty();
+            if (response == null) {
+                _author.append($('<option/>', {
+                    value: null,
+                    text: ""
+                }));
+            }
+            else {
+
+
+                $.each(response, function (index, region) {
+                    _author.append($('<option/>', {
+                        value: region.Value,
+                        text: region.Text
+                    }));
+                });
+            }
+
+            /*d.resolve(method === "GET" ? result.data : result);*/
+        }).fail(function (xhr) {
+            d.reject(xhr.responseJSON ? xhr.responseJSON.Message : xhr.statusText);
+        });
+    })
+
+    $("#AuthorId").change(function () {
+
+    })
+
+    $("#search").click(function () {
+
+        debugger
+        var cat_id = $("#CategoryId").val();
+        var auth_id = $("#AuthorId").val();
+        var url = "\\Book\\GetFilterData"
+        var _author = $('#AuthorId');
+        $.ajax(url, {
+            method: "GET",
+            data: { categoryId: cat_id, authorId: auth_id },
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            xhrFields: { withCredentials: false }
+        }).done(function (response) {
+            debugger
+            /*d.resolve(method === "GET" ? result.data : result);*/
+        }).fail(function (xhr) {
+
+        });
+
+
+
+    })
+
+</script>

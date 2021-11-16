@@ -1,0 +1,285 @@
+﻿@model List<Web_Application.BO.BookBO>
+
+
+@{
+    ViewData["Title"] = "Books";
+    ViewData["PageCaption"] = "Books";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@*@model IEnumerable<TrafixSelfServiceAPI.BusinessObject.BO.UserBO>*@
+
+@{
+    ViewData["Title"] = "User";
+    ViewData["PageCaption"] = "User";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<html>
+<head>   
+
+</head>
+<body class="">
+    <div class="demo-container">
+
+        <div class="dx-fieldset">
+            <div class="dx-fieldset-header">Event Handling</div>
+            <div class="dx-field">
+                <div class="dx-field-label">Category</div>
+                <div class="dx-field-value">
+                    <div id="Category"></div>
+                </div>
+            </div>
+            <div class="current-value"> Selected product is <span>HD Video Player</span> </div>
+        </div>
+
+        <div class="dx-fieldset">
+            <div class="dx-fieldset-header">Event Handling</div>
+            <div class="dx-field">
+                <div class="dx-field-label">Author</div>
+                <div class="dx-field-value">
+                    <div id="Author"></div>
+                </div>
+            </div>
+            <div class="current-value"> Selected product is <span>HD Video Player</span> </div>
+        </div>
+
+
+        <div id="grid"></div>
+        <div class="options" hidden>
+            <div class="caption">Options</div>
+            <div class="option">
+                <span>Refresh Mode:</span>
+                <div id="refresh-mode"></div>
+            </div>
+            <div id="requests">
+                <div>
+                    <div class="caption">Network Requests</div>
+                    <div id="clear"></div>
+                </div>
+                <ul></ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+   
+
+    $(function () {
+        //var URL = "api/UserDataGrid";
+        var URL = "/Books";
+        var _data = ""
+        var status = "true";
+        var ordersStore = new DevExpress.data.CustomStore({
+            key: "BookId",
+            load: function () {
+                return sendRequest(URL + "/Get");
+            },
+        });
+
+        $('#Category').dxSelectBox({
+            items: sendRequest(URL + "/GetAllCategory"),           
+            onValueChanged(data) {
+                $('.current-value > span').text(data.value);
+            },
+        });
+
+        $('#Author').dxSelectBox({
+            items: sendRequest(URL + "/GetAllAuthors"),
+            onValueChanged(data) {
+                $('.current-value > span').text(data.value);
+            },
+        });
+
+        var dataGrid = $("#grid").dxDataGrid({
+            dataSource: ordersStore,
+            repaintChangesOnly: true,
+            showBorders: true,
+            columnAutoWidth: true,
+            showRowLines: true,
+            allowColumnResizing: true,
+            allowColumnReordering: true,
+            showColumnLines: true,
+            rowAlternateEnable: true,
+            filterRow: {
+                visible: true,
+                applyFilter: "Auto"
+            },
+            searchPanel: {
+                visible: true,
+                width: 240,
+                placeholder: "Search in grid..."
+            },
+            headerFilter: {
+                visible: true
+            },       
+            scrolling: {
+                mode: "virtual"
+            },
+            columns: [               
+                {
+                    dataField: "CategoryId",
+                    caption: "Category",                 
+                    dataType: "number",
+                    lookup: {
+                        dataSource: new DevExpress.data.CustomStore({
+                            key: "Value",
+                            loadMode: "raw",
+                            load: function () {
+                                return sendRequest(URL + "/GetAllCategory");
+                            }
+                        }),
+                        valueExpr: "CategoryId",
+                        displayExpr: "Name"
+                    }
+                },
+                {
+                    dataField: "AuthorId",
+                    caption: "Author",                    
+                    dataType: "number",
+                    lookup: {
+                        dataSource: new DevExpress.data.CustomStore({
+                            key: "Value",
+                            loadMode: "raw",
+                            load: function () {
+                                return sendRequest(URL + "/GetAllAuthors");
+                            }
+                        }),
+                        valueExpr: "AuthorId",
+                        displayExpr: "Name"
+                    }
+                },
+                {
+                    dataField: "BookId",
+                    visible: false,
+                },
+                {
+                    dataField: "Title",
+                },
+                {
+                    dataField: "Edition",
+                },
+                {
+                    dataField: "Cost",
+                },
+                {
+                    dataField: "Remarks",
+                },
+
+            ],
+
+        }).dxDataGrid("instance");
+
+
+
+        $("#refresh-mode").dxSelectBox({
+            items: ["full", "reshape", "repaint"],
+            value: "reshape",
+            onValueChanged: function (e) {
+                dataGrid.option("editing.refreshMode", e.value);
+            }
+        });
+
+        $("#clear").dxButton({
+            text: "Clear",
+            onClick: function () {
+                $("#requests ul").empty();
+            }
+        });
+
+
+        function sendRequest(url, method, data) {
+            var d = $.Deferred();
+
+            method = method || "GET";
+            logRequest(method, url, data);
+
+
+
+            if (status == "true") {
+                $.ajax(url, {
+                    method: method || "GET",
+                    data: JSON.stringify(data),
+                    cache: false,
+                    processData: true,
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    xhrFields: { withCredentials: false }
+                }).done(function (response) {
+                    debugger
+
+                    d.resolve(response);
+                    
+
+                    /*d.resolve(method === "GET" ? result.data : result);*/
+                }).fail(function (xhr) {
+                    d.reject(xhr.responseJSON ? xhr.responseJSON.Message : xhr.statusText);
+                });
+
+                return d.promise();
+            }
+        }
+
+        function logRequest(method, url, data) {
+            var args = Object.keys(data || {}).map(function (key) {
+                return key + "=" + data[key];
+            }).join(" ");
+
+            var logList = $("#requests ul"),
+                time = DevExpress.localization.formatDate(new Date(), "HH:mm:ss"),
+                newItem = $("<li>").text([time, method, url.slice(URL.length), args].join(" "));
+
+            logList.prepend(newItem);
+        }
+    });
+</script>
+
+
+
+
+
+@*<div class="dx-viewport">
+        @(Html.DevExtreme().DataGrid<Web_Application.BO.BookBO>()
+        .DataSource(Model)
+        .ShowBorders(true)
+        .ColumnAutoWidth(true)
+        .ShowRowLines(true)
+        .AllowColumnResizing(true)
+        .AllowColumnReordering(true)
+        .ShowColumnLines(true)
+        .RowAlternationEnabled(true)
+        .FilterRow(filterRow => filterRow
+                    .Visible(true)
+                    .ApplyFilter(GridApplyFilterMode.Auto)
+                    )
+        .SearchPanel(searchPanel => searchPanel
+                    .Visible(true)
+                    .Width(240)
+                    .Placeholder("Search in grid...")
+                    )
+        .HeaderFilter(headerFilter => headerFilter.Visible(true))
+        .Columns(columns =>
+        {
+
+            columns.AddFor(m => m.BookId);
+
+            columns.AddFor(m => m.Title);
+
+            columns.AddFor(m => m.Edition);
+
+            columns.AddFor(m => m.Cost);
+
+            columns.AddFor(m => m.Remarks);
+
+            columns.AddFor(m => m.CategoryId);
+
+            columns.AddFor(m => m.AuthorId);
+
+            columns.AddFor(m => m.CreatedAt);
+
+            columns.AddFor(m => m.Active);
+        })
+            )
+    </div>*@

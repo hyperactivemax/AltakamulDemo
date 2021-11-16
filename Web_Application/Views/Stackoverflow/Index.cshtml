@@ -1,0 +1,49 @@
+﻿@model IEnumerable<Web_Application.Models.StackoverflowBO.Item>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.question_id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.link)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.view_count)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.answer_count)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.question_id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.title)
+                    </td>
+                    <td>
+                        <a href="@item.link" target="_blank"><span>@item.link</span></a>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.view_count)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.answer_count)
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
