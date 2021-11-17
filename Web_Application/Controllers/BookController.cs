@@ -33,16 +33,16 @@ namespace Web_Application.Controllers
                 Name = "Select Category"
             };
             catList.Add(categoryBO);
-
+            catList.OrderBy(x => x.CategoryId);
             ViewData["CategoryId"] = new SelectList(catList, "CategoryId", "Name");
 
             return View();
         }
 
-        public async Task<IActionResult> GetFilterData(int? categoryId = null, int? authorId = null)
+        public async Task<JsonResult> GetFilterData(int? categoryId = null, int? authorId = null)
         {
             List<BookBO> booksList = await GetBooksByLinq(categoryId, authorId);
-            return PartialView("_dataGrid", booksList);
+            return Json(booksList);
         }
 
         public async Task<IActionResult> IndexSP()

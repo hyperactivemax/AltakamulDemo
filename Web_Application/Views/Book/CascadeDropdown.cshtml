@@ -1,28 +1,37 @@
 ﻿
+<body>
 
-@{
-    ViewData["Title"] = "Index";
-}
-
-<div class="row">
-    <div class="col-md-3">
-        <div class="form-group">
-            <label class="control-label">Category</label>
-            <select id="CategoryId" class="form-control" itemid="0" asp-items="ViewBag.CategoryId"></select>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-group">
+                <label class="control-label">Category</label>
+                <select id="CategoryId" class="form-control" itemid="0" asp-items="ViewBag.CategoryId"></select>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label class="control-label">Author</label>
+                <select id="AuthorId" class="form-control"></select>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <input type="button" id="search" value="Search" class="btn btn-success" style="margin-top:29px" />
+            </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="form-group">
-            <label class="control-label">Author</label>
-            <select id="AuthorId" class="form-control"></select>
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table" id="records_table">
+            </table>
         </div>
-    </div>   
-</div>
+    </div>
+</body>
 
 
 
 <script>
-    
+
     $("#CategoryId").val(0);
     $("#CategoryId").change(function () {
         var id = $("#CategoryId").val();
@@ -80,13 +89,39 @@
             xhrFields: { withCredentials: false }
         }).done(function (response) {
             debugger
+
+            MakeGrid(response)
             /*d.resolve(method === "GET" ? result.data : result);*/
         }).fail(function (xhr) {
 
         });
+        function MakeGrid(response) {
+            debugger
+            $("#records_table tr").remove();
 
+            var $tr = $('<tr>').append(
+                $('<th>').text("Author"),
+                $('<th>').text("Category"),
+                $('<th>').text("Title"),
+                $('<th>').text("Edition"),
+                $('<th>').text("Remarks"),
+                $('<th>').text("Cost"),
+                $('<th>').text("CreatedAt"),
+            ).appendTo('#records_table');
 
-
+            $.each(response, function (i, item) {
+                var $tr = $('<tr>').append(
+                    $('<td>').text(item.Author.Name),
+                    $('<td>').text(item.Category.Name),
+                    $('<td>').text(item.Title),
+                    $('<td>').text(item.Edition),
+                    $('<td>').text(item.Remarks),
+                    $('<td>').text("$"+item.Cost),
+                    $('<td>').text(item.CreatedAt),
+                ).appendTo('#records_table');
+                /*console.log($tr.wrap('<p>').html());*/
+            });
+        }
     })
 
 </script>
