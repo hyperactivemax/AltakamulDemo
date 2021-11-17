@@ -30,7 +30,7 @@ namespace Web_Application.Controllers
             CategoryBO categoryBO = new CategoryBO
             {
                 CategoryId = 0,
-                Name = "Select Category"
+                Name = "Select All"
             };
             catList.Add(categoryBO);
             catList.OrderBy(x => x.CategoryId);

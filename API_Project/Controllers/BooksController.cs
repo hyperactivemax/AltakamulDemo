@@ -27,22 +27,36 @@ namespace API_Project.Controllers
         // GET: api/<BooksController>1
         [HttpGet]
         [Route("GetByLinq")]
-        public async Task<IEnumerable<BookBO>> GetByLinq(int? categoryId, int? authorId)
+        public IActionResult GetByLinq(int? categoryId, int? authorId)
         {
             BooksBLL booksBLL = new BooksBLL(_mapper, _context);
-            IEnumerable<BookBO> uploadFileBOs = await booksBLL.GetBooksByCategoryAndAuthor_ByLINQ(categoryId,authorId);
+            IEnumerable<BookBO> booksList = booksBLL.GetBooksByCategoryAndAuthor_ByLINQ(categoryId,authorId);
 
-            return uploadFileBOs;
+            if (booksList != null)
+            {
+                return Ok(booksList);
+            }
+            else
+            {
+                return BadRequest("Something went wrong, Try again later.");
+            }            
         }
 
         [HttpGet]
         [Route("GetByProcedure")]
-        public async Task<IEnumerable<BookBO>> GetByProcedure(int? categoryId, int? authorId)
+        public  IActionResult GetByProcedure(int? categoryId, int? authorId)
         {
             BooksBLL booksBLL = new BooksBLL(_mapper, _context);
-            IEnumerable<BookBO> uploadFileBOs = await booksBLL.GetBooksByCategoryAndAuthor_ByProcedure(categoryId, authorId);
+            IEnumerable<BookBO> booksList = booksBLL.GetBooksByCategoryAndAuthor_ByProcedure(categoryId, authorId);
 
-            return uploadFileBOs;
+            if (booksList != null)
+            {
+                return Ok(booksList);
+            }
+            else
+            {
+                return BadRequest("Something went wrong, Try again later.");
+            }
         }        
     }
 }

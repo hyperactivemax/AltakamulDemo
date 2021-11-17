@@ -27,12 +27,19 @@ namespace API_Project.Controllers
         // GET: api/<BooksController>
         [HttpGet]
         [Route("GetAllCategory")]
-        public async Task<IEnumerable<CategoryBO>> GetAllCategory(int? CategoryId)
+        public IActionResult GetAllCategory(int? CategoryId)
         {
-            BooksBLL uploadFileBLL = new BooksBLL(_mapper, _context);
-            IEnumerable<CategoryBO> uploadFileBOs = await uploadFileBLL.GetAllCategory(CategoryId);
+            CategoryBLL categoryBLL = new CategoryBLL(_mapper, _context);
+            IEnumerable<CategoryBO> categoryList = categoryBLL.GetAllCategory(CategoryId);
 
-            return uploadFileBOs;
+            if (categoryList != null)
+            {
+                return Ok(categoryList);
+            }
+            else
+            {
+                return BadRequest("Something went wrong, Try again later.");
+            }
         }
     }
 }

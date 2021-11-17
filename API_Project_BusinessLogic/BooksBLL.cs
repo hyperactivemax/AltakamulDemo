@@ -23,36 +23,7 @@ namespace API_Project_BusinessLogic
             _context = context;
         }
 
-        public async Task<List<CategoryBO>> GetAllCategory(int? id)
-        {
-            List<Category> records = new List<Category>();
-            if (id != null)
-            {
-                records = _context.Categories.Where(x => x.Active == true && x.CategoryId == id.Value).ToList();
-            }
-            else
-            {
-                records = _context.Categories.Where(x => x.Active == true).ToList();
-
-            }
-            return _mapper.Map<List<CategoryBO>>(records);
-        }
-
-        public async Task<List<AuthorBO>> GetAllAuthors(int? id)
-        {
-            List<Author> records = new List<Author>();
-            if (id != null)
-            {
-                records = _context.Authors.Where(x => x.Active == true && x.Category.CategoryId == id.Value).ToList();
-            }
-            else
-            {
-                records = _context.Authors.Where(x => x.Active == true).ToList();
-            }
-            return _mapper.Map<List<AuthorBO>>(records);
-        }
-
-        public async Task<IEnumerable<BookBO>> GetBooksByCategoryAndAuthor_ByLINQ(int? categoryId, int? authorId)
+        public  IEnumerable<BookBO> GetBooksByCategoryAndAuthor_ByLINQ(int? categoryId, int? authorId)
         {
             List<Book> records = new List<Book>();
             if (categoryId != null && authorId != null)
@@ -70,7 +41,7 @@ namespace API_Project_BusinessLogic
             return _mapper.Map<List<BookBO>>(records);
         }
 
-        public async Task<IEnumerable<BookBO>> GetBooksByCategoryAndAuthor_ByProcedure(int? categoryId, int? authorId)
+        public IEnumerable<BookBO> GetBooksByCategoryAndAuthor_ByProcedure(int? categoryId, int? authorId)
         {
             List<Book> list = new List<Book>();
 
